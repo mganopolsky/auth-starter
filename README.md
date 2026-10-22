@@ -30,7 +30,8 @@ Click "Use this template" on GitHub to start a new app with auth already wired.
    Client ID and secret.
 5. **Redirect URLs.** Supabase -> Authentication -> URL Configuration: Site URL `http://localhost:3000`,
    add Redirect URL `http://localhost:3000/auth/callback`.
-6. **Run it.**
+   The default template setup assumes testing with localhost; Add your server URL to the list once you get it working with localhost. 
+7. **Run it.**
    ```bash
    npm ci
    npm run dev
@@ -41,7 +42,6 @@ Click "Use this template" on GitHub to start a new app with auth already wired.
 
 Add the deployed URL to Supabase Redirect URLs (`https://<your-domain>/auth/callback`) and to the
 Google client's Authorized JavaScript origins, and set the two env vars on the host.
-Vercel's free Hobby plan is for non-commercial use only.
 
 ## Scopes and verification
 
