@@ -60,6 +60,8 @@ Publish the consent screen to "In production" so anyone can sign in (in "Testing
 - `npm audit` reports high-severity advisories in the dev-only lint chain (`eslint-config-next` ->
   `braces`). Production dependencies report 0.
 - ESLint 9 is flagged as no longer supported; upgrade tracked for a follow-up.
+- Google Drive folder picker: tested in Chrome only. Safari and private windows can show "The API
+  developer key is invalid." See the note under "Google Drive setup".
 
 ## Scripts
 
@@ -69,6 +71,8 @@ Publish the consent screen to "In production" so anyone can sign in (in "Testing
 ## Google Drive setup
 
 Set up Google Cloud and your local env file for the Drive feature.
+
+> **Browser support: tested in Google Chrome only.** The folder picker is Google's own embedded window. In Safari and in private/incognito windows it can fail with "The API developer key is invalid." Use a normal Chrome window for Drive. Other browsers are a known gap.
 
 Use the same Google Cloud project you used for Google sign-in.
 

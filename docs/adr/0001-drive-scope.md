@@ -45,4 +45,6 @@ Practical rules that follow:
 | D: second user with no folder chosen gets "no folder" | Not run; the second account had already picked a folder |
 
 ## Known limitation
-The Google Picker fails with "The API developer key is invalid" in a Chrome incognito window. It works in a normal window and in Safari. Test Drive features outside incognito mode.
+The Google Picker is tested in normal Chrome only. It failed with "The API developer key is invalid" in a Chrome incognito window, and in Safari after working there once. The cause is not confirmed (the Picker runs in an embedded Google frame, so browsers that restrict cross-site frames are the suspect). Decision: leave as is and document it.
+
+Possible later fix: with `drive.readonly`, replace the Picker with an in-app folder browser that lists folders through the server. That would work in every browser and remove the Picker API key and project number from the setup.
