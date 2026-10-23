@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const ERRORS: Record<string, string> = {
@@ -31,7 +32,7 @@ export default async function DrivePage({
         <a href="/api/drive/connect">Connect Google Drive</a>
       )}
       <p>
-        <a href="/">Back</a>
+        <Link href="/">Back</Link>
       </p>
     </>
   );
