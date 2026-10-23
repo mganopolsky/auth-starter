@@ -10,52 +10,68 @@ type DriveFile = {
   webViewLink?: string;
 };
 
+type Page = { files: DriveFile[]; nextPageToken: string | null } | { error: string };
+
 const FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
+
+async function fetchPage(pageToken?: string): Promise<Page> {
+  try {
+    const url = pageToken
+      ? `/api/drive/files?pageToken=${encodeURIComponent(pageToken)}`
+      : "/api/drive/files";
+    const response = await fetch(url);
+    const body = (await response.json()) as {
+      files?: DriveFile[];
+      nextPageToken?: string | null;
+      error?: string;
+      googleStatus?: number;
+    };
+    if (response.ok) return { files: body.files ?? [], nextPageToken: body.nextPageToken ?? null };
+    if (body.error === "folder_access_denied") {
+      return { error: `Google says this app cannot read that folder (status ${body.googleStatus}).` };
+    }
+    if (body.error === "not_connected") {
+      return { error: "Google Drive is no longer connected. Please reconnect." };
+    }
+    return { error: "Could not load files. Please try again." };
+  } catch {
+    return { error: "Could not load files. Please try again." };
+  }
+}
 
 export function FileList() {
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (pageToken?: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const url = pageToken
-        ? `/api/drive/files?pageToken=${encodeURIComponent(pageToken)}`
-        : "/api/drive/files";
-      const response = await fetch(url);
-      const body = (await response.json()) as {
-        files?: DriveFile[];
-        nextPageToken?: string | null;
-        error?: string;
-        googleStatus?: number;
-      };
-      if (!response.ok) {
-        if (body.error === "folder_access_denied") {
-          setError(`Google says this app cannot read that folder (status ${body.googleStatus}).`);
-        } else if (body.error === "not_connected") {
-          setError("Google Drive is no longer connected. Please reconnect.");
-        } else {
-          setError("Could not load files. Please try again.");
-        }
-        return;
-      }
-      setFiles((previous) => (pageToken ? [...previous, ...(body.files ?? [])] : (body.files ?? [])));
-      setNextPageToken(body.nextPageToken ?? null);
+  const apply = useCallback((page: Page, append: boolean) => {
+    if ("error" in page) {
+      setError(page.error);
+    } else {
+      setError(null);
+      setFiles((previous) => (append ? [...previous, ...page.files] : page.files));
+      setNextPageToken(page.nextPageToken);
       setLoaded(true);
-    } catch {
-      setError("Could not load files. Please try again.");
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    void fetchPage().then((page) => {
+      if (!cancelled) apply(page, false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [apply]);
+
+  function loadMore(token: string) {
+    setLoading(true);
+    void fetchPage(token).then((page) => apply(page, true));
+  }
 
   return (
     <>
@@ -90,7 +106,7 @@ export function FileList() {
         </table>
       )}
       {nextPageToken && (
-        <button type="button" onClick={() => load(nextPageToken)} disabled={loading}>
+        <button type="button" onClick={() => loadMore(nextPageToken)} disabled={loading}>
           Load more
         </button>
       )}
