@@ -2,7 +2,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const ERRORS: Record<string, string> = {
-  denied: "You declined access. No changes were made.",
   state: "The connection request could not be verified. Please try again.",
   exchange: "Could not reach Google. Please try again.",
   grant: "Google did not return the access we need. Please try again.",
@@ -22,15 +21,17 @@ export default async function DrivePage({
     .maybeSingle();
   const connected = Boolean(connection && !connection.revoked_at);
 
+  const deniedMessage = connected
+    ? "You cancelled the request. Your existing Google Drive connection is unchanged."
+    : "You cancelled the request. Google Drive is not connected.";
+  const message = error === "denied" ? deniedMessage : error && (ERRORS[error] ?? "Something went wrong.");
+
   return (
     <>
       <h1>Google Drive</h1>
-      {error && <p role="alert">{ERRORS[error] ?? "Something went wrong."}</p>}
-      {connected ? (
-        <p>Drive is connected.</p>
-      ) : (
-        <a href="/api/drive/connect">Connect Google Drive</a>
-      )}
+      {message && <p role="alert">{message}</p>}
+      <p>Status: {connected ? "Connected" : "Not connected"}</p>
+      {!connected && <a href="/api/drive/connect">Connect Google Drive</a>}
       <p>
         <Link href="/">Back</Link>
       </p>
