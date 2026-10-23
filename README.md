@@ -9,6 +9,7 @@ Click "Use this template" on GitHub to start a new app with auth already wired.
 - Session refresh and route protection in `src/proxy.ts` (Next.js 16's replacement for middleware)
 - `/login`, `/auth/callback` (with open-redirect protection), `POST /auth/signout`
 - `profiles` table with row-level security and a signup trigger (`supabase/migrations/0001_profiles.sql`)
+- `google_drive_connections` table with row-level security (`supabase/migrations/0002_google_drive_connections.sql`) and a test for it (`supabase/tests/google_drive_connections_rls.sql`)
 - CI: lint, typecheck, build on Node 24
 
 ## Requirements
@@ -139,3 +140,32 @@ Use the same Google Cloud project you used for Google sign-in.
    GOOGLE_DRIVE_CLIENT_SECRET=
    DRIVE_TOKEN_ENCRYPTION_KEY=
    ```
+
+
+## Drive database setup
+
+Do this once for each Supabase project.
+
+### Step 1: Create the table
+1. In your project folder, open `supabase/migrations/0002_google_drive_connections.sql`.
+2. Select all of the text and copy it.
+3. Open https://supabase.com/dashboard and click your project.
+4. In the left menu, click **SQL Editor**.
+5. Click **New query**.
+6. Paste the text.
+7. Click **Run**.
+8. You should see: **Success. No rows returned**.
+
+### Step 2: Check that it is protected
+1. In the left menu, click **Authentication**, then **Users**.
+2. Make sure at least two users are listed. If not, sign in to the app with two different Google accounts first.
+3. In your project folder, open `supabase/tests/google_drive_connections_rls.sql`.
+4. Select all of the text and copy it.
+5. In the left menu, click **SQL Editor**, then **New query**.
+6. Paste the text.
+7. Click **Run**.
+8. You should see one row with three numbers: `1`, `0`, `0`.
+   The column names are `rows_visible_to_a`, `b_rows_visible_to_a`, `b_rows_updated_by_a`.
+9. If you see any other numbers, stop. The table is not protected. Do not continue.
+
+The test leaves no data behind.
