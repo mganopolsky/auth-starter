@@ -35,5 +35,14 @@ Practical rules that follow:
 - **File-level selection on `drive.file`:** users pick individual files in the Picker and the app lists those. No review needed and scales without a cap, but the app does not see files added to the folder later.
 - **Hybrid:** start with `drive.readonly` for the proof of concept, add the file-level mode on `drive.file` if verification is not worth the cost.
 
-## Not yet tested
-Matrix tests B (file added after picking), C (subfolder), D and E (second user cannot see the first user's folder) from issue #10.
+## Other matrix results (issue #10)
+| Test | Result |
+|------|--------|
+| B: file added to the folder after picking | Passes, the new file appears on reload |
+| C: subfolder | Passes, listed as a Folder entry; contents are not listed (one level only) |
+| E: second user cannot see the first user's folder | Passes, the second account listed only its own file |
+| F, G, H: disconnect, reconnect, revoke at Google | Pass (issues #6 and #7 walkthroughs) |
+| D: second user with no folder chosen gets "no folder" | Not run; the second account had already picked a folder |
+
+## Known limitation
+The Google Picker fails with "The API developer key is invalid" in a Chrome incognito window. It works in a normal window and in Safari. Test Drive features outside incognito mode.
