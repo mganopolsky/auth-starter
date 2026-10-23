@@ -120,3 +120,9 @@ export async function exchangeCode(
   if (!response.ok) return null;
   return parseGrant(await response.json());
 }
+
+/** CSRF guard for cookie-authenticated POSTs: the Origin header must be our own origin. */
+export function isSameOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  return origin !== null && origin === getOrigin(request);
+}

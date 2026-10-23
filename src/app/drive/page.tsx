@@ -6,6 +6,7 @@ const ERRORS: Record<string, string> = {
   exchange: "Could not reach Google. Please try again.",
   grant: "Google did not return the access we need. Please try again.",
   save: "Could not save the connection. Please try again.",
+  disconnect: "Could not disconnect. Please try again.",
 };
 
 export default async function DrivePage({
@@ -19,7 +20,8 @@ export default async function DrivePage({
     .from("google_drive_connections")
     .select("connected_at, revoked_at")
     .maybeSingle();
-  const connected = Boolean(connection && !connection.revoked_at);
+  const revoked = Boolean(connection?.revoked_at);
+  const connected = Boolean(connection && !revoked);
 
   const deniedMessage = connected
     ? "You cancelled the request. Your existing Google Drive connection is unchanged."
@@ -30,8 +32,17 @@ export default async function DrivePage({
     <>
       <h1>Google Drive</h1>
       {message && <p role="alert">{message}</p>}
+      {revoked && !message && (
+        <p role="alert">Google Drive access was revoked. Please reconnect.</p>
+      )}
       <p>Status: {connected ? "Connected" : "Not connected"}</p>
-      {!connected && <a href="/api/drive/connect">Connect Google Drive</a>}
+      {connected ? (
+        <form action="/api/drive/disconnect" method="post">
+          <button type="submit">Disconnect Google Drive</button>
+        </form>
+      ) : (
+        <a href="/api/drive/connect">Connect Google Drive</a>
+      )}
       <p>
         <Link href="/">Back</Link>
       </p>
