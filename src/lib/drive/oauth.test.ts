@@ -28,7 +28,7 @@ describe("codeChallenge", () => {
 });
 
 describe("buildAuthUrl", () => {
-  it("requests only drive.file, offline, with PKCE and forced consent", () => {
+  it("requests only the read-only Drive scope, offline, with PKCE and forced consent", () => {
     const url = new URL(buildAuthUrl("http://localhost:3000", "st", "ver"));
     const p = url.searchParams;
     expect(url.origin + url.pathname).toBe("https://accounts.google.com/o/oauth2/v2/auth");
@@ -79,7 +79,7 @@ describe("safeEqual", () => {
 });
 
 describe("parseGrant", () => {
-  it("accepts a refresh token with drive.file", () => {
+  it("accepts a refresh token with the Drive scope", () => {
     expect(parseGrant({ refresh_token: "rt", scope: `openid ${DRIVE_SCOPE}` })).toEqual({
       refreshToken: "rt",
       scopes: `openid ${DRIVE_SCOPE}`,

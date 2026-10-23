@@ -110,7 +110,7 @@ Use the same Google Cloud project you used for Google sign-in.
 ### Part 4: Add the Drive scope
 1. Left menu: **Google Auth Platform -> Data Access**.
 2. Click **Add or remove scopes**.
-3. Find `https://www.googleapis.com/auth/drive.file` and tick it.
+3. Find `https://www.googleapis.com/auth/drive.readonly` and tick it. (Google calls this a **restricted** scope. It is fine for up to 100 test users. A public app needs Google verification first.)
 4. Click **Update**, then **Save**.
 
 ### Part 5: Find the project number
