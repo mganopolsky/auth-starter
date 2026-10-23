@@ -13,7 +13,7 @@ function LoginForm() {
 
   async function signInWithGoogle() {
     setError(null);
-    const next = safeNextPath(params.get("next"));
+    const next = safeNextPath(params.get("next"), "/drive");
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

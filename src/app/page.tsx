@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
@@ -9,6 +10,9 @@ export default async function HomePage() {
     <>
       <h1>Signed in</h1>
       <p>{email ?? "Unknown user"}</p>
+      <p>
+        <Link href="/drive">Google Drive</Link>
+      </p>
       <form action="/auth/signout" method="post">
         <button type="submit">Sign out</button>
       </form>

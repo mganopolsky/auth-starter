@@ -5,7 +5,7 @@ import { safeNextPath } from "@/lib/safe-redirect";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = safeNextPath(searchParams.get("next"));
+  const next = safeNextPath(searchParams.get("next"), "/drive");
 
   if (code) {
     const supabase = await createClient();
