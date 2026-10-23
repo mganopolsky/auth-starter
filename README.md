@@ -22,7 +22,7 @@ Click "Use this template" on GitHub to start a new app with auth already wired.
 
 1. **Supabase project.** Create a new project. Run `supabase/migrations/0001_profiles.sql` in the SQL Editor.
 2. **Env file.** `cp .env.example .env.local`, then fill in the project URL and the **publishable** key
-   (Project Settings -> API Keys). Never use or commit the secret key.
+   (Project Settings -> API Keys). Never commit the secret key. Only the optional delete-account feature uses it (see "Delete-account setup").
 3. **Google OAuth client.** In Google Cloud -> Google Auth Platform: configure the consent screen
    (External), then create a **Web application** client with:
    - Authorized JavaScript origin: `http://localhost:3000`
@@ -42,7 +42,7 @@ Click "Use this template" on GitHub to start a new app with auth already wired.
 ## Deploying (e.g. Vercel)
 
 Add the deployed URL to Supabase Redirect URLs (`https://<your-domain>/auth/callback`) and to the
-Google client's Authorized JavaScript origins, and set the two env vars on the host.
+Google client's Authorized JavaScript origins, and set every variable from `.env.example` on the host (the Supabase URL and publishable key, plus the Drive and delete-account variables if you use those features).
 
 ## Scopes and verification
 
@@ -136,6 +136,20 @@ Use the same Google Cloud project you used for Google sign-in.
    DRIVE_TOKEN_ENCRYPTION_KEY=
    ```
 4. Save the file.
+
+## Delete-account setup
+
+The **Delete my account** button on the home page removes the signed-in user's account and Drive connection, and revokes the app's access at Google. It needs Supabase's secret key.
+
+1. Open your Supabase project -> **Project Settings -> API Keys**.
+2. Under **Secret keys**, copy the key (it starts with `sb_secret_`).
+3. Open `.env.local` and add this line, with the key right after the `=`:
+   ```
+   SUPABASE_SECRET_KEY=
+   ```
+4. Restart `npm run dev`.
+
+The secret key bypasses database protections. It is used in one file (`src/lib/supabase/admin.ts`) and must never start with `NEXT_PUBLIC_` or be committed.
 
 ## Drive database setup
 

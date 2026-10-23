@@ -27,6 +27,7 @@ function LoginForm() {
   return (
     <>
       <h1>Sign in</h1>
+      {params.get("deleted") && <p>Your account was deleted.</p>}
       <button type="button" onClick={signInWithGoogle}>
         Continue with Google
       </button>
