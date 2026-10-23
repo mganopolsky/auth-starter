@@ -63,3 +63,79 @@ Publish the consent screen to "In production" so anyone can sign in (in "Testing
 ## Scripts
 
 `npm run dev` | `build` | `start` | `lint` | `typecheck`
+
+
+# Set up Google Cloud and your local env file for the Drive feature.
+
+Use the same Google Cloud project you used for Google sign-in.
+
+## Part 1: Enable two APIs
+1. Open https://console.cloud.google.com and select your project in the project picker (top left - `auth-starter`).
+2. Left menu: **APIs & Services -> Library**.
+3. Search **Google Drive API**, open it, click **Enable**.
+4. Click **Library** again, search **Google Picker API**, open it, click **Enable**.
+
+## Part 2: Create the API key
+1. Left menu: **APIs & Services -> Credentials**.
+2. Click **+ Create credentials -> API key**.
+3. **Name:** `picker-key`.
+4. **Application restrictions:** select **Websites**.
+5. Under **Website restrictions**, click **Add**.
+6. Enter `http://localhost:3000/*` and click **Done**.
+7. **API restrictions:** select **Restrict key**.
+8. Select **Google Picker API** and **Google Drive API**.
+9. Click **Create**.
+10. Copy the key.
+11. Open `.env.local` and add this line, with the key right after the `=`:
+    ```
+    NEXT_PUBLIC_GOOGLE_PICKER_API_KEY=
+    ```
+
+## Part 3: Create the OAuth client
+1. On **APIs & Services -> Credentials**, click **+ Create credentials -> OAuth client ID**.
+2. **Application type:** **Web application**.
+3. **Name:** `drive-client`.
+4. Under **Authorized JavaScript origins**, click **+ Add URI** and enter `http://localhost:3000`.
+5. Under **Authorized redirect URIs**, click **+ Add URI** and enter `http://localhost:3000/api/drive/callback`.
+6. Click **Create**.
+7. Open `.env.local` and add these two lines. Paste the **Client ID** after the first `=` and the **Client secret** after the second:
+   ```
+   GOOGLE_DRIVE_CLIENT_ID=
+   GOOGLE_DRIVE_CLIENT_SECRET=
+   ```
+
+## Part 4: Add the Drive scope
+1. Left menu: **Google Auth Platform -> Data Access**.
+2. Click **Add or remove scopes**.
+3. Find `https://www.googleapis.com/auth/drive.file` and tick it.
+4. Click **Update**, then **Save**.
+
+## Part 5: Find the project number
+1. Left menu: **Cloud overview -> Dashboard**.
+2. In the **Project info** card, copy the **Project number**.
+3. Open `.env.local` and add this line, with the number right after the `=`:
+   ```
+   NEXT_PUBLIC_GOOGLE_APP_ID=
+   ```
+
+## Part 6: Create the encryption key
+1. In your terminal, run:
+   ```bash
+   openssl rand -base64 32
+   ```
+2. Copy the output.
+3. Open `.env.local` and add this line, with the output right after the `=`:
+   ```
+   DRIVE_TOKEN_ENCRYPTION_KEY=
+   ```
+4. Save the file.
+
+## Part 7: Update the repo
+1. Add these five names to `.env.example`, with no values:
+   ```
+   NEXT_PUBLIC_GOOGLE_PICKER_API_KEY=
+   NEXT_PUBLIC_GOOGLE_APP_ID=
+   GOOGLE_DRIVE_CLIENT_ID=
+   GOOGLE_DRIVE_CLIENT_SECRET=
+   DRIVE_TOKEN_ENCRYPTION_KEY=
+   ```
