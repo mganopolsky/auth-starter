@@ -1,7 +1,9 @@
 import "server-only";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
-export const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+// Read-only access to the user's Drive, so the app can list and read the files in a picked folder.
+// Restricted scope: public apps need Google verification (see README).
+export const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.readonly";
 export const OAUTH_COOKIE = "drive_oauth";
 export const OAUTH_COOKIE_MAX_AGE_SECONDS = 600;
 
@@ -88,7 +90,7 @@ export function buildAuthUrl(
 export type TokenGrant = { refreshToken: string; scopes: string };
 
 /**
- * A usable grant must include a refresh token and the drive.file scope.
+ * A usable grant must include a refresh token and the drive.readonly scope.
  * Returns null otherwise (the caller shows a "reconnect" error).
  */
 export function parseGrant(body: unknown): TokenGrant | null {

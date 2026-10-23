@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { FileList } from "./file-list";
 import { FolderPicker } from "./folder-picker";
 
 const ERRORS: Record<string, string> = {
@@ -41,6 +42,7 @@ export default async function DrivePage({
         <>
           <p>Folder: {connection?.folder_name ?? "None chosen"}</p>
           <FolderPicker hasFolder={Boolean(connection?.folder_id)} />
+          {connection?.folder_id && <FileList key={connection.folder_id} />}
         </>
       )}
       {connected ? (

@@ -5,7 +5,7 @@ import { DriveNotConnectedError, getDriveAccessToken } from "@/lib/drive/token";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
-// Returns a short-lived drive.file access token for the Google Picker, which runs in the browser.
+// Returns a short-lived read-only Drive access token for the Google Picker, which runs in the browser.
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403, headers: NO_STORE });
