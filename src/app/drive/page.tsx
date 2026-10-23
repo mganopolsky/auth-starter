@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { FolderPicker } from "./folder-picker";
 
 const ERRORS: Record<string, string> = {
   state: "The connection request could not be verified. Please try again.",
@@ -18,7 +19,7 @@ export default async function DrivePage({
   const supabase = await createClient();
   const { data: connection } = await supabase
     .from("google_drive_connections")
-    .select("connected_at, revoked_at")
+    .select("connected_at, revoked_at, folder_id, folder_name")
     .maybeSingle();
   const revoked = Boolean(connection?.revoked_at);
   const connected = Boolean(connection && !revoked);
@@ -36,6 +37,12 @@ export default async function DrivePage({
         <p role="alert">Google Drive access was revoked. Please reconnect.</p>
       )}
       <p>Status: {connected ? "Connected" : "Not connected"}</p>
+      {connected && (
+        <>
+          <p>Folder: {connection?.folder_name ?? "None chosen"}</p>
+          <FolderPicker hasFolder={Boolean(connection?.folder_id)} />
+        </>
+      )}
       {connected ? (
         <form action="/api/drive/disconnect" method="post">
           <button type="submit">Disconnect Google Drive</button>
