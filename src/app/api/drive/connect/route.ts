@@ -16,10 +16,11 @@ export async function GET(request: Request) {
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) return NextResponse.redirect(`${origin}/login`);
 
+  const email = typeof data.claims.email === "string" ? data.claims.email : undefined;
   const state = randomUrlToken();
   const verifier = randomUrlToken();
 
-  const response = NextResponse.redirect(buildAuthUrl(origin, state, verifier));
+  const response = NextResponse.redirect(buildAuthUrl(origin, state, verifier, email));
   response.cookies.set(OAUTH_COOKIE, encodeCookie({ state, verifier }), {
     httpOnly: true,
     sameSite: "lax",

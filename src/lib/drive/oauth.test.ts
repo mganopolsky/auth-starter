@@ -42,6 +42,13 @@ describe("buildAuthUrl", () => {
     expect(p.get("client_id")).toBe("client-id");
   });
 
+  it("adds login_hint only when given", () => {
+    const withHint = new URL(buildAuthUrl("http://localhost:3000", "s", "v", "a@b.com"));
+    expect(withHint.searchParams.get("login_hint")).toBe("a@b.com");
+    const without = new URL(buildAuthUrl("http://localhost:3000", "s", "v"));
+    expect(without.searchParams.has("login_hint")).toBe(false);
+  });
+
   it("throws when the client id is missing", () => {
     delete process.env.GOOGLE_DRIVE_CLIENT_ID;
     expect(() => buildAuthUrl("http://localhost:3000", "s", "v")).toThrow(/not set/);

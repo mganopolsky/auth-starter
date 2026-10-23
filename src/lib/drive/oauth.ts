@@ -62,7 +62,12 @@ export function safeEqual(a: string, b: string): boolean {
   return ba.length === bb.length && timingSafeEqual(ba, bb);
 }
 
-export function buildAuthUrl(origin: string, state: string, verifier: string): string {
+export function buildAuthUrl(
+  origin: string,
+  state: string,
+  verifier: string,
+  loginHint?: string,
+): string {
   const params = new URLSearchParams({
     client_id: requireEnv("GOOGLE_DRIVE_CLIENT_ID"),
     redirect_uri: redirectUri(origin),
@@ -75,6 +80,8 @@ export function buildAuthUrl(origin: string, state: string, verifier: string): s
     code_challenge: codeChallenge(verifier),
     code_challenge_method: "S256",
   });
+  // Pre-selects the signed-in account in Google's account picker.
+  if (loginHint) params.set("login_hint", loginHint);
   return `${AUTH_URL}?${params.toString()}`;
 }
 
