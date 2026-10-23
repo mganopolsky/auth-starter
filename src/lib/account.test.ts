@@ -4,12 +4,17 @@ vi.mock("server-only", () => ({}));
 
 import { deleteAccount } from "./account";
 
-function deps(overrides: Partial<Parameters<typeof deleteAccount>[1]> = {}) {
+type Overrides = {
+  getRefreshToken?: () => Promise<string | null>;
+  revokeToken?: (token: string) => Promise<boolean>;
+  deleteUser?: (userId: string) => Promise<void>;
+};
+
+function deps(o: Overrides = {}) {
   return {
-    getRefreshToken: vi.fn(async () => "refresh-token" as string | null),
-    revokeToken: vi.fn(async () => true),
-    deleteUser: vi.fn(async () => undefined),
-    ...overrides,
+    getRefreshToken: vi.fn(o.getRefreshToken ?? (async () => "refresh-token" as string | null)),
+    revokeToken: vi.fn(o.revokeToken ?? (async () => true)),
+    deleteUser: vi.fn(o.deleteUser ?? (async () => undefined)),
   };
 }
 
@@ -25,24 +30,24 @@ describe("deleteAccount", () => {
   });
 
   it("still deletes when there is no Drive connection", async () => {
-    const d = deps({ getRefreshToken: vi.fn(async () => null) });
+    const d = deps({ getRefreshToken: async () => null });
     await deleteAccount("user-1", d);
     expect(d.revokeToken).not.toHaveBeenCalled();
     expect(d.deleteUser).toHaveBeenCalledWith("user-1");
   });
 
   it("still deletes when revocation fails or the token cannot be read", async () => {
-    const failedRevoke = deps({ revokeToken: vi.fn(async () => false) });
+    const failedRevoke = deps({ revokeToken: async () => false });
     await deleteAccount("user-1", failedRevoke);
     expect(failedRevoke.deleteUser).toHaveBeenCalled();
 
-    const unreadable = deps({ getRefreshToken: vi.fn(async () => Promise.reject(new Error("x"))) });
+    const unreadable = deps({ getRefreshToken: async () => Promise.reject(new Error("x")) });
     await deleteAccount("user-1", unreadable);
     expect(unreadable.deleteUser).toHaveBeenCalled();
   });
 
   it("throws when the user delete fails", async () => {
-    const d = deps({ deleteUser: vi.fn(async () => Promise.reject(new Error("db"))) });
+    const d = deps({ deleteUser: async () => Promise.reject(new Error("db")) });
     await expect(deleteAccount("user-1", d)).rejects.toThrow("db");
   });
 });
