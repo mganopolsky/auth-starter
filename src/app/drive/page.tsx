@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 const ERRORS: Record<string, string> = {
-  denied: "You declined access. Nothing was connected.",
+  denied: "You declined access. No changes were made.",
   state: "The connection request could not be verified. Please try again.",
   exchange: "Could not reach Google. Please try again.",
   grant: "Google did not return the access we need. Please try again.",
