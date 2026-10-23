@@ -9,6 +9,7 @@ import {
   decodeCookie,
   encodeCookie,
   getOrigin,
+  isSameOrigin,
   parseGrant,
   safeEqual,
 } from "./oauth";
@@ -94,5 +95,16 @@ describe("parseGrant", () => {
 describe("getOrigin", () => {
   it("uses the request origin by default", () => {
     expect(getOrigin(new Request("http://localhost:3000/x"))).toBe("http://localhost:3000");
+  });
+});
+
+describe("isSameOrigin", () => {
+  const url = "http://localhost:3000/api/drive/token";
+  it("accepts a matching Origin header", () => {
+    expect(isSameOrigin(new Request(url, { headers: { origin: "http://localhost:3000" } }))).toBe(true);
+  });
+  it("rejects a different or missing Origin header", () => {
+    expect(isSameOrigin(new Request(url, { headers: { origin: "https://evil.example" } }))).toBe(false);
+    expect(isSameOrigin(new Request(url))).toBe(false);
   });
 });
